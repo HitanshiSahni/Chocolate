@@ -1,0 +1,272 @@
+
+
+# # 🔥 **Networking Commands – Full Lab Exercise (With Commands, Outputs & Explanations)**
+
+This document contains all networking commands required for basic network testing.
+Each command includes:
+
+* **Command**
+* **Sample Output**
+* **Explanation**
+
+---
+
+# ## 1️⃣ **IP Address Configuration**
+
+## **Windows**
+
+```bash
+ipconfig /all
+```
+
+### **Sample Output**
+
+```
+Ethernet adapter Wi-Fi:
+   IPv4 Address. . . . . . . . . : 192.168.1.10
+   Subnet Mask . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . : 192.168.1.1
+   Physical Address . . . . . .  : 3C-22-BF-9E-1B-A4
+```
+
+### **Explanation**
+
+Displays complete network configuration: IP address, gateway, DNS, and MAC.
+
+---
+
+## **Linux**
+
+```bash
+ifconfig
+```
+
+### **Sample Output**
+
+```
+wlan0: flags=4163<UP,BROADCAST,RUNNING>  
+inet 192.168.1.12  netmask 255.255.255.0  
+ether a4:3c:12:bd:f3:22
+```
+
+### **Explanation**
+
+Shows interface details including IP, netmask, and MAC address.
+
+---
+
+# ## 2️⃣ **Ping**
+
+```bash
+ping google.com
+```
+
+### **Sample Output**
+
+```
+Reply from 142.250.183.14: bytes=32 time=22ms TTL=115
+Reply from 142.250.183.14: bytes=32 time=24ms TTL=115
+```
+
+### **Explanation**
+
+Checks connectivity and round-trip time between your device and destination.
+
+---
+
+# ## 3️⃣ **Traceroute / Tracert**
+
+## **Windows**
+
+```bash
+tracert google.com
+```
+
+### **Sample Output**
+
+```
+1   192.168.1.1
+2   10.10.0.1
+3   142.250.182.1
+```
+
+## **Linux**
+
+```bash
+traceroute google.com
+```
+
+### **Explanation**
+
+Shows every hop (router) your packet travels through to reach the destination.
+
+---
+
+# ## 4️⃣ **Pathping (Windows)**
+
+```bash
+pathping google.com
+```
+
+### **Sample Output**
+
+```
+Hop 1: 192.168.1.1  -- 0% loss
+Hop 2: 10.10.0.1    -- 0% loss
+Trace complete.
+```
+
+### **Explanation**
+
+Combines Ping + Traceroute and displays packet loss at each hop.
+
+---
+
+# ## 5️⃣ **ARP**
+
+```bash
+arp -a
+```
+
+### **Sample Output**
+
+```
+Interface: 192.168.1.10
+  Internet Address    Physical Address     Type
+  192.168.1.1         50-7a-23-4d-a1-09    dynamic
+  192.168.1.5         3c-22-bf-9e-1b-a4    dynamic
+```
+
+### **Explanation**
+
+Shows IP-to-MAC mapping in ARP cache (local network devices).
+
+---
+
+# ## 6️⃣ **Netstat**
+
+```bash
+netstat -an
+```
+
+### **Sample Output**
+
+```
+TCP    0.0.0.0:80        LISTENING
+TCP    192.168.1.10:49722  ESTABLISHED  142.250.183.14:443
+UDP    0.0.0.0:5353       *
+```
+
+### **Explanation**
+
+Displays active TCP/UDP connections, listening ports, and protocol statistics.
+
+---
+
+# ## 7️⃣ **NBTSTAT (Windows)**
+
+```bash
+nbtstat -n
+```
+
+### **Sample Output**
+
+```
+NetBIOS Local Name Table
+---------------------------------------------------
+COMPUTER1   <00>  UNIQUE  Registered
+WORKGROUP   <00>  GROUP   Registered
+```
+
+### **Explanation**
+
+Shows NetBIOS names (older Windows networking system).
+
+---
+
+# ## 8️⃣ **NSLOOKUP**
+
+```bash
+nslookup google.com
+```
+
+### **Sample Output**
+
+```
+Server:  dns.google
+Address: 8.8.8.8
+
+Name:    google.com
+Address: 142.250.183.14
+```
+
+### **Explanation**
+
+Performs DNS lookup and resolves domain names into IP addresses.
+
+---
+
+# ## 9️⃣ **Route Table**
+
+## **Windows**
+
+```bash
+route print
+```
+
+### **Sample Output**
+
+```
+IPv4 Route Table
+Destination     Netmask         Gateway
+0.0.0.0         0.0.0.0         192.168.1.1
+192.168.1.0     255.255.255.0   On-link
+```
+
+## **Linux**
+
+```bash
+route -n
+```
+
+### **Explanation**
+
+Shows routing table used to determine packet forwarding.
+
+---
+
+# 🔟 **Nmap (Network Scanner)**
+
+```bash
+nmap 192.168.1.1
+```
+
+### **Sample Output**
+
+```
+Starting Nmap 7.94
+Nmap scan report for 192.168.1.1
+PORT     STATE SERVICE
+80/tcp   open  http
+443/tcp  open  https
+23/tcp   closed telnet
+```
+
+### **Explanation**
+
+Scans a host/network and detects open ports, running services, and host OS.
+
+---
+
+# # ✔️ **Conclusion**
+
+This lab covers all basic network diagnostic commands used to:
+
+* Test connectivity
+* Debug DNS issues
+* Inspect routing
+* List active connections
+* Scan networks
+* View IP & MAC information
+
+You can now perform the entire exercise just by copying these commands.
