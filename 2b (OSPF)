@@ -1,0 +1,233 @@
+//cpp
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <limits>
+using namespace std;
+
+const int INF = numeric_limits<int>::max();
+
+// ---- Dijkstra Algorithm ----
+void dijkstra(int src, const vector<vector<pair<int,int>>>& adj,
+              vector<int>& dist, vector<int>& parent)
+{
+    int V = adj.size();
+    dist.assign(V, INF);
+    parent.assign(V, -1);
+
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+    dist[src] = 0;
+    pq.push({0, src});
+
+    while (!pq.empty()) {
+        auto curr = pq.top();
+        pq.pop();
+
+        int currDist = curr.first;
+        int u = curr.second;
+
+        if (currDist > dist[u]) continue;
+
+        for (auto edge : adj[u]) {
+            int v = edge.first;
+            int w = edge.second;
+
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                parent[v] = u;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+}
+
+// ---- Find Next Hop for OSPF ----
+int getNextHop(int src, int dest, const vector<int>& parent)
+{
+    if (src == dest) return -1;
+    int node = dest;
+
+    while (parent[node] != src && parent[node] != -1)
+        node = parent[node];
+
+    return (parent[node] == -1 ? -1 : node);
+}
+
+// ---- MAIN ----
+int main() {
+    int V, E;
+    cout << "Enter number of vertices and edges: ";
+    cin >> V >> E;
+
+    vector<vector<pair<int,int>>> adj(V);
+
+    cout << "Enter edges (u v w):\n";
+    for (int i = 0; i < E; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].push_back({v, w});
+        adj[v].push_back({u, w}); // undirected graph
+    }
+
+    // **Ask for Source Node**
+    int source;
+    cout << "\nEnter source node: ";
+    cin >> source;
+
+    if (source < 0 || source >= V) {
+        cout << "Invalid source node!";
+        return 0;
+    }
+
+    vector<int> dist, parent;
+    dijkstra(source, adj, dist, parent);
+
+    // ----------- SHORTEST PATHS FROM SOURCE -----------
+    cout << "\n===== SHORTEST PATHS FROM SOURCE " << source << " =====\n";
+    cout << "Node | Cost | Parent\n";
+
+    for (int i = 0; i < V; i++) {
+        cout << i << "    | "
+             << (dist[i] == INF ? -1 : dist[i])
+             << "    | "
+             << parent[i]
+             << endl;
+    }
+
+    // ----------- OSPF ROUTING TABLE FOR SOURCE -----------
+    cout << "\n======= OSPF ROUTING TABLE FOR ROUTER " << source << " =======\n";
+    cout << "Destination | NextHop | Cost\n";
+
+    for (int dest = 0; dest < V; dest++) {
+        int nextHop = getNextHop(source, dest, parent);
+
+        cout << dest << "           | "
+             << (nextHop == -1 ? string("-") : to_string(nextHop))
+             << "        | "
+             << (dist[dest] == INF ? string("INF") : to_string(dist[dest]))
+             << endl;
+    }
+
+    return 0;
+}
+
+
+//java
+
+
+import java.util.*;
+
+public class OSPF_Dijkstra {
+
+    static final int INF = Integer.MAX_VALUE;
+
+    // ------------------ Dijkstra Algorithm ------------------
+    public static void dijkstra(int src, List<List<int[]>> adj,
+                                int[] dist, int[] parent) {
+
+        int V = adj.size();
+        Arrays.fill(dist, INF);
+        Arrays.fill(parent, -1);
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+
+        dist[src] = 0;
+        pq.add(new int[]{0, src});
+
+        while (!pq.isEmpty()) {
+            int[] node = pq.poll();
+            int currDist = node[0];
+            int u = node[1];
+
+            if (currDist > dist[u]) continue;
+
+            for (int[] edge : adj.get(u)) {
+                int v = edge[0];
+                int w = edge[1];
+
+                if (dist[v] > dist[u] + w) {
+                    dist[v] = dist[u] + w;
+                    parent[v] = u;
+                    pq.add(new int[]{dist[v], v});
+                }
+            }
+        }
+    }
+
+    // ------------------ Compute Next Hop (OSPF) ------------------
+    public static int getNextHop(int src, int dest, int[] parent) {
+        if (src == dest) return -1;
+
+        int node = dest;
+
+        while (parent[node] != src && parent[node] != -1) {
+            node = parent[node];
+        }
+
+        return parent[node] == -1 ? -1 : node;
+    }
+
+    // ------------------ MAIN ------------------
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of vertices and edges: ");
+        int V = sc.nextInt();
+        int E = sc.nextInt();
+
+        List<List<int[]>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        System.out.println("Enter edges (u v w):");
+        for (int i = 0; i < E; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            int w = sc.nextInt();
+
+            adj.get(u).add(new int[]{v, w});
+            adj.get(v).add(new int[]{u, w}); // undirected graph
+        }
+
+        System.out.print("\nEnter source node: ");
+        int source = sc.nextInt();
+
+        if (source < 0 || source >= V) {
+            System.out.println("Invalid source node!");
+            return;
+        }
+
+        int[] dist = new int[V];
+        int[] parent = new int[V];
+
+        dijkstra(source, adj, dist, parent);
+
+        // ------------------ SHORTEST PATHS ------------------
+        System.out.println("\n===== SHORTEST PATHS FROM SOURCE " + source + " =====");
+        System.out.println("Node | Cost | Parent");
+
+        for (int i = 0; i < V; i++) {
+            System.out.println(i + "    | " +
+                    (dist[i] == INF ? "INF" : dist[i]) +
+                    "    | " + parent[i]);
+        }
+
+        // ------------------ OSPF ROUTING TABLE ------------------
+        System.out.println("\n===== OSPF ROUTING TABLE FOR ROUTER " + source + " =====");
+        System.out.println("Destination | NextHop | Cost");
+
+        for (int dest = 0; dest < V; dest++) {
+            int nextHop = getNextHop(source, dest, parent);
+
+            System.out.println(dest + "           | " +
+                    (nextHop == -1 ? "-" : nextHop) +
+                    "        | " +
+                    (dist[dest] == INF ? "INF" : dist[dest]));
+        }
+
+        sc.close();
+    }
+}
