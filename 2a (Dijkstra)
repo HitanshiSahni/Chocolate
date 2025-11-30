@@ -1,0 +1,154 @@
+//cpp code - g++ dij.cpp -o dij
+// ./dij
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <limits>
+
+using namespace std;
+
+const int INF = numeric_limits<int>::max();
+
+vector<int> dijkstra(int source, vector<vector<pair<int,int>>>& adj) {
+    int V = adj.size();
+    vector<int> dist(V, INF);
+
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+    dist[source] = 0;
+    pq.push({0, source});
+
+    while (!pq.empty()) {
+        int currDist = pq.top().first;
+        int u = pq.top().second;
+        pq.pop();
+
+        if (currDist > dist[u]) continue;
+
+        for (auto edge : adj[u]) {
+            int v = edge.first;
+            int weight = edge.second;
+
+            if (dist[v] > dist[u] + weight) {
+                dist[v] = dist[u] + weight;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+
+    return dist;
+}
+
+int main() {
+    int V, E;
+    cout << "Enter number of vertices and edges: ";
+    cin >> V >> E;
+
+    vector<vector<pair<int,int>>> adj(V);
+
+    cout << "Enter edges (u v w):\n";
+    for (int i = 0; i < E; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].push_back({v, w});
+        adj[v].push_back({u, w}); // undirected network
+    }
+
+    int source;
+    cout << "Enter source node: ";
+    cin >> source;
+
+    vector<int> dist = dijkstra(source, adj);
+
+    cout << "\nShortest distances from source " << source << ":\n";
+    for (int i = 0; i < V; i++) {
+        if (dist[i] == INF)
+            cout << "Node " << i << " : unreachable\n";
+        else
+            cout << "Node " << i << " : " << dist[i] << endl;
+    }
+
+    return 0;
+}
+
+
+// Java code - javac DijkstraShortestPath.java
+// java DijkstraShortestPath
+
+
+import java.util.*;
+
+public class DijkstraShortestPath {
+
+    static final int INF = Integer.MAX_VALUE;
+
+    static int[] dijkstra(int source, List<List<int[]>> adj) {
+        int V = adj.size();
+        int[] dist = new int[V];
+        Arrays.fill(dist, INF);
+
+        // Min-heap: (distance, node)
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+
+        dist[source] = 0;
+        pq.add(new int[]{0, source});
+
+        while (!pq.isEmpty()) {
+            int[] top = pq.poll();
+            int currDist = top[0];
+            int u = top[1];
+
+            if (currDist > dist[u]) continue;
+
+            for (int[] edge : adj.get(u)) {
+                int v = edge[0];
+                int weight = edge[1];
+
+                if (dist[v] > dist[u] + weight) {
+                    dist[v] = dist[u] + weight;
+                    pq.add(new int[]{dist[v], v});
+                }
+            }
+        }
+
+        return dist;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of vertices and edges: ");
+        int V = sc.nextInt();
+        int E = sc.nextInt();
+
+        List<List<int[]>> adj = new ArrayList<>();
+        for (int i = 0; i < V; i++)
+            adj.add(new ArrayList<>());
+
+        System.out.println("Enter edges (u v w):");
+        for (int i = 0; i < E; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            int w = sc.nextInt();
+
+            adj.get(u).add(new int[]{v, w});
+            adj.get(v).add(new int[]{u, w}); // undirected graph
+        }
+
+        System.out.print("Enter source node: ");
+        int source = sc.nextInt();
+
+        int[] dist = dijkstra(source, adj);
+
+        System.out.println("\nShortest distances from source " + source + ":");
+        for (int i = 0; i < V; i++) {
+            if (dist[i] == INF)
+                System.out.println("Node " + i + " : unreachable");
+            else
+                System.out.println("Node " + i + " : " + dist[i]);
+        }
+
+        sc.close();
+    }
+}
